@@ -7,7 +7,8 @@
     "start": "npm run dev",
     "build": "node build/build.js",
     "copy-fonts": "cpy node_modules/framework7-icons/fonts/*.* src/fonts && cpy node_modules/material-design-icons/iconfont/*.{eot,ttf,woff,woff2} src/fonts",
-    "postinstall": "npm run copy-fonts"
+    "postinstall": "npm run copy-fonts",
+    "deploy": "push-dir --dir=www --branch=gh-pages --cleanup"
   },
   "repository": {
     "type": "git",
@@ -62,6 +63,7 @@
     "postcss-import": "^11.0.0",
     "postcss-loader": "^2.0.8",
     "postcss-url": "^7.2.1",
+    "push-dir": "^0.4.1",
     "rimraf": "^2.6.0",
     "semver": "^5.3.0",
     "shelljs": "^0.7.6",
