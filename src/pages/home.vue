@@ -1,54 +1,86 @@
 <template>
   <f7-page>
-    <f7-navbar>
-      <f7-nav-left>
-        <f7-link icon-if-ios="f7:menu" icon-if-md="material:menu" panel-open="left"></f7-link>
-      </f7-nav-left>
-      <f7-nav-title>My App</f7-nav-title>
-      <f7-nav-right>
-        <f7-link icon-if-ios="f7:menu" icon-if-md="material:menu" panel-open="right"></f7-link>
-      </f7-nav-right>
-    </f7-navbar>
-    <f7-toolbar>
-      <f7-link>Left Link</f7-link>
-      <f7-link>Right Link</f7-link>
-    </f7-toolbar>
-    <f7-block strong>
-      <p>Here is your blank Framework7 app. Let's see what we have here.</p>
-    </f7-block>
-    <f7-block-title>Navigation</f7-block-title>
-    <f7-list>
-      <f7-list-item link="/about/" title="About"></f7-list-item>
-      <f7-list-item link="/form/" title="Form"></f7-list-item>
-    </f7-list>
-    <f7-block-title>Modals</f7-block-title>
-    <f7-block strong>
-      <f7-row>
-        <f7-col width="50">
-          <f7-button fill raised popup-open="#popup">Popup</f7-button>
-        </f7-col>
-        <f7-col width="50">
-          <f7-button fill raised login-screen-open="#login-screen">Login Screen</f7-button>
-        </f7-col>
-      </f7-row>
-    </f7-block>
-    <f7-block-title>Panels</f7-block-title>
-    <f7-block strong>
-      <f7-row>
-        <f7-col width="50">
-          <f7-button fill raised panel-open="left">Left Panel</f7-button>
-        </f7-col>
-        <f7-col width="50">
-          <f7-button fill raised panel-open="right">Right Panel</f7-button>
-        </f7-col>
-      </f7-row>
-    </f7-block>
-    <f7-list>
-      <f7-list-item link="/dynamic-route/blog/45/post/125/?foo=bar#about" title="Dynamic Route"></f7-list-item>
-      <f7-list-item link="/load-something-that-doesnt-exist/" title="Default Route (404)"></f7-list-item>
-    </f7-list>
+    <div class="page">
+      <div class="navbar">
+        <div class="navbar-inner sliding">
+          <div class="title">Todolist</div>
+        </div>
+      </div>
+      <div class="toolbar tabbar">
+        <div class="toolbar-inner">
+          <a href="#tab-1" class="tab-link tab-link-active" @click="setAction('all')">My Tasks</a>
+          <a href="#tab-1" class="tab-link" @click="setAction(false)">In Progress</a>
+          <a href="#tab-1" class="tab-link" @click="setAction(true)">Completed</a>
+          <span class="tab-link-highlight" v-bind:style="{transform: tabStyle}" style="width: 33.3333%;"></span>
+        </div>
+      </div>
+      <div class="block">
+        <!-- <div class="row" style=""> -->
+          <div class="tabs-animated-wrap">
+            <div class="tabs">
+              <div id="tab-1" class="page-content tab tab-active">
+                <tab-data :action="currentTab" :items="items"  @query="onQuery" @changData="changData"></tab-data>
+              </div>
+            </div>
+          </div>
+        <!-- </div> -->
+      </div>
+    </div>
   </f7-page>
 </template>
 <script>
-export default {}
+import TabData from "./components/TabData.vue";
+
+export default {
+  components: { TabData: TabData },
+  name: "Home",
+  data() {
+    return {
+      items: [],
+      currentTab: "all",
+      id: 0,
+      tabStyle: "translate3d(0%, 0px, 0px)"
+    };
+  },
+  methods: {
+    changData(val) {},
+    onQuery: function(val) {
+      if (val.data.new) {
+        this.id++;
+        this.items.push({
+          id: this.id,
+          title: val.data.title,
+          date: val.data.date,
+          time: val.data.time,
+          file: val.data.file,
+          comment: val.data.comment,
+          checkbox: false,
+          star: false
+        });
+        return;
+      }
+      console.log(val.data)
+      let item = this.items.find(f => f.id === val.data.id);
+      console.log(item)
+      item =  {
+        ...val.data
+      } 
+      // item = Object.assign({}, val.data);
+      console.log(this.items)
+    },
+    setAction(action) {
+      this.currentTab = action;
+      if (this.currentTab == true)
+        this.tabStyle = "translate3d(200%, 0px, 0px)";
+      else if (this.currentTab == false)
+        this.tabStyle = "translate3d(100%, 0px, 0px)";
+      else this.tabStyle = "translate3d(0%, 0px, 0px)";
+    }
+  }
+};
 </script>
+<style>
+.li_yellow {
+  background-color: #fff2dc;
+}
+</style>
