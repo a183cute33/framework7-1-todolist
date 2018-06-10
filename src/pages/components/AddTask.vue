@@ -17,27 +17,27 @@ export default {
   data() {
     return {
       newData: {
+        id: null,
         title: null,
         date: null,
         time: null,
         file: null,
         comment: null,
-        check: false,
-        new: true
+        checkbox: false,
+        star: false,
+        new: true,
+        show: true
       },
       transferData: null,
       isShow: false
     };
   },
-  mounted() {},
   methods: {
     onClick() {
       this.isShow = !this.isShow;
       this.transferData = Object.assign({}, this.newData);
     },
     onQuery(val) {
-      console.log(val)
-      this.isShow = !this.isShow;
       this.$emit("query", val);
     },
     closeEdit() {

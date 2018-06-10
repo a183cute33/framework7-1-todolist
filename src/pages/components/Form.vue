@@ -1,55 +1,60 @@
 <template>
     <div class="card">
-        <div class="card-header">Header</div>
+        <div class="card-header">
+             <div class="item-content item-input">
+                <div class="item-inner">
+                    <div class="item-title item-label">Title</div>
+                    <div class="item-input-wrap">
+                        <input type="text" name="name" placeholder="Title" v-model="data.title">
+                    </div>
+                </div>
+            </div>
+        </div>
         <div class="card-content card-content-padding">
-            <ul>
-                <li>
-                    <div class="item-content item-input">
-                        <div class="item-inner">
-                            <div class="item-title item-label">Title</div>
-                            <div class="item-input-wrap">
-                                <input type="text" name="name" placeholder="Title" v-model="data.title">
-                            </div>
+            <li>
+                <div class="item-content item-input">
+                    <div class="item-inner">
+                        <div class="item-title item-label">Deadline</div>
+                        <div class="item-input-wrap">
+                            <input type="date" placeholder="Select date" v-model="data.date"/>
+                            <input type="time" placeholder="Date Time" v-model="data.time"/>
                         </div>
                     </div>
-                <li>
-                    <div class="item-content item-input">
-                        <div class="item-inner">
-                            <div class="item-title item-label">Deadline</div>
-                            <div class="item-input-wrap">
-                                <input type="date" name="name" placeholder="yyyy/mm/dd" v-model="data.date">
-                                <input type="time" name="name" placeholder="hh:mm" v-model="data.time">
+                </div>
+            </li>
+            <li>
+                <div class="item-content item-input">
+                    <div class="item-inner">
+                        <div class="item-title item-label">File</div>
+                        <label class="file-select">
+                            <div class="row">
+                                <div class="col-10">
+                                    <div class="select-button">
+                                        <span><f7-icon slot="media" f7="add"></f7-icon></span>
+                                    </div>
+                                </div>
                             </div>
+                            <div  v-if="data.file">{{data.file.name}}</div>
+                            <input style="display: none;" type="file" @change="handleFileChange"/>
+                        </label>
+                    </div>
+                </div>
+            </li>
+            <li>
+                <div class="item-content item-input">
+                    <div class="item-inner">
+                        <div class="item-title item-label">Comment</div>
+                        <div class="item-input-wrap">
+                            <textarea placeholder="text" rows="4" cols="50" v-model="data.comment">
+                            </textarea>
                         </div>
                     </div>
-                </li>
-                <li>
-                    <div class="item-content item-input">
-                        <div class="item-inner">
-                            <div class="item-title item-label">File</div>
-                            <div class="item-input-wrap">
-                                <input type="file" id="files" name="files[]" multiple />
-                                <output id="list"></output>
-                            </div>
-                        </div>
-                    </div>
-                </li>
-                <li>
-                    <div class="item-content item-input">
-                        <div class="item-inner">
-                            <div class="item-title item-label">Comment</div>
-                            <div class="item-input-wrap">
-                                <textarea placeholder="E-mail" rows="4" cols="50" v-model="data.comment">
-                                </textarea>
-                            </div>
-                        </div>
-                    </div>
-                </li>
-            </ul>
+                </div>
+            </li>
         </div>
         <div class="card-footer">
             <a @click="closeEdit" class="button">Cancel</a>
-            <a @click="onSubmit" v-if="data.check != ''" class="button button-active">Update</a>
+            <a @click="onSubmit" v-if="!data.new" class="button button-active">Update</a>
             <a @click="onSubmit" v-else class="button button-active">Add Task</a>
         </div>
     </div>
@@ -58,30 +63,44 @@
 export default {
   props: ["data"],
   name: "Form",
-  watch: {
-    data: function() {
-        isNew: false
-    }
+  watch: {},
+  mounted() {
+    // console.log(this.$f7);
   },
-  mounted() {},
   methods: {
     onSubmit() {
       if (!this.data.title) {
         alert("請輸入訊息");
         return;
       }
+      this.closeEdit();
       this.$emit("query", this.data);
     },
     closeEdit() {
-      // 關閉內容時，讓外層了解並觸發
       this.$emit("closeEditTodo");
+    },
+    previewFiles(item) {
+      item.file = this.$refs.myFiles.files;
+    },
+    handleFileChange(e) {
+      this.data.file = e.target.files[0];
     }
   }
 };
 </script>
 <style>
-ul {
-  padding-right: 0px;
+ul,
+li {
   list-style: none;
+}
+.select-button {
+  padding: 1rem;
+  width: 20px;
+  height: 20px;
+  color: white;
+  background-color: #997a52;
+  border-radius: 0.3rem;
+  text-align: center;
+  font-weight: bold;
 }
 </style>

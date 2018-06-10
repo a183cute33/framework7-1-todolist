@@ -4,47 +4,33 @@
         <f7-list sortable :sortable-enabled="sorting">
           <f7-list-item v-if="action === 'all' || action === item.checkbox" v-for="item in items" v-bind:class="{ li_yellow: item.star }">
             <div class="item-media">
-              <a @click="onClick(item)">
+              <a @click="onClick(item)" v-show="item.show">
                 <f7-icon f7="check_round" v-if="item.checkbox"></f7-icon>
                 <f7-icon f7="circle" v-else></f7-icon>
               </a>
             </div>
-            <!-- <div class="item-inner"> -->
                <div class="item-title">
                 <div class="accordion-item" :id='action +"_accordion-item_" + item.id'>
                   <div class="accordion-item">
-                      <!-- <a href="#" class="item-link item-content"> -->
-                        <del v-if="item.checkbox">
-                            <div class="item-title">
-                            {{item.title}}
-                            </div>
-                            <div class="item-after"><f7-icon f7="alarm_fill"></f7-icon>{{item.date}}</div>
-                        </del>
-                        <div v-else>
-                          <div class="item-title">
-                              {{item.title}}
-                          </div>
-                          <div class="item-after">
-                            <div v-if="item.date"><f7-icon size="18" f7="alarm_fill"></f7-icon>&nbsp &nbsp{{item.date}}</div>
-                            <div v-if="item.file">&nbsp &nbsp<f7-icon size="18" f7="document_fill"></f7-icon></div>
-                            <div v-if="item.comment">&nbsp &nbsp<f7-icon size="18" f7="chat_fill"></f7-icon></div>
-                          </div>
-                        </div>
-                      <!-- </a> -->
+                    <del v-if="item.checkbox">
+                      <ShowTitle :item="item"></ShowTitle>
+                    </del>
+                    <div v-else>
+                      <ShowTitle :item="item"></ShowTitle>
+                    </div>
                   </div>
                   <div class="accordion-item-content">
                       <forms @query="onQuery" @closeEditTodo="closeEdit" :data="transferData"></forms>
                   </div>
                 </div>
                </div>
-                <div class="item-after">
-                  <a @click="onOpen(item.id)"><f7-icon f7="compose"></f7-icon></a>&nbsp &nbsp
+                <div class="item-after" v-show="item.show">
+                  <a @click="onOpen(item)"><f7-icon f7="compose"></f7-icon></a>&nbsp &nbsp
                   <a @click="onStarClick(item)">
                     <f7-icon v-if="item.star" f7="star_fill" color="yellow"></f7-icon>
                     <f7-icon v-else f7="star" color="yellow"></f7-icon>
                   </a>
               </div>
-            <!-- </div> -->
           </f7-list-item>
         </f7-list>
     </div>
@@ -52,9 +38,10 @@
 <script>
 import Forms from "./Form.vue";
 import AddTask from "./AddTask.vue";
+import ShowTitle from "./ShowTitle.vue";
 
 export default {
-  components: { Forms: Forms, AddTask: AddTask },
+  components: { Forms: Forms, AddTask: AddTask, ShowTitle: ShowTitle },
   name: "TabData",
   props: ["items", "action"],
   data() {
@@ -62,21 +49,19 @@ export default {
       sorting: true,
       openObject: null,
       newData: {
-        title: null,
+        id: null,
+        title: "",
         date: null,
         time: null,
         file: null,
         comment: null,
-        check: false,
-        new: true
+        checkbox: false,
+        star: false,
+        new: true,
+        show: true
       },
       transferData: null
     };
-  },
-  watch: {
-    data() {
-      this.$emit("changData", this.items);
-    }
   },
   methods: {
     onClick(param) {
@@ -85,12 +70,15 @@ export default {
     onStarClick(param) {
       param.star = !param.star;
     },
-    onOpen(id) {
-      this.transferData = Object.assign({}, this.items.find(f => f.id === id));
-      this.openObject = document.getElementById(
-        this.action + "_accordion-item_" + id
-      );
-      this.openObject.classList.toggle("accordion-item-opened");
+    onOpen(item) {
+      this.transferData = Object.assign({}, item);
+      this.openObject = this.action + "_accordion-item_" + item.id;
+      const elementClass = document.getElementsByClassName("accordion-item");
+      for (let i = 0; i <= elementClass.length - 1; i++) {
+        elementClass[i].classList.remove("accordion-item-opened");
+      }
+      const element = document.getElementById(this.openObject);
+      element.classList.toggle("accordion-item-opened");
     },
     onQuery(val) {
       this.$emit("query", {
@@ -98,7 +86,8 @@ export default {
       });
     },
     closeEdit() {
-      this.openObject.classList.toggle("accordion-item-opened");
+      const element = document.getElementById(this.openObject);
+      element.classList.toggle("accordion-item-opened");
     }
   }
 };
