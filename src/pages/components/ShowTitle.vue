@@ -17,4 +17,7 @@ export default {
 };
 </script>
 <style>
+.item-after{
+    font-size: 12px;
+}
 </style>

@@ -1,44 +1,41 @@
 <template>
-    <div class="block">
-        <add-task @query="onQuery"></add-task>
-        <f7-list sortable :sortable-enabled="sorting">
-          <f7-list-item v-if="action === 'all' || action === item.checkbox" v-for="item in items" v-bind:class="{ li_yellow: item.star }">
-            <!-- <div class="item-inner"> -->
-              <div class="item-media">
-                <a @click="onClick(item)" v-show="item.show">
-                  <f7-icon f7="check_round" v-if="item.checkbox"></f7-icon>
-                  <f7-icon f7="circle" v-else></f7-icon>
-                </a>
+  <div>
+    <add-task @query="onQuery"></add-task>
+    <div class="list sortable accordion-list sortable-enabled">
+      <ul>
+        <li class="accordion-item" v-if="action === 'all' || action === item.checkbox" v-for="item in items" v-bind:class="{ li_yellow: item.star }">
+          <div class="item-content">
+            <div class="item-media">
+              <a @click="onClick(item)">
+                <f7-icon f7="check_round" v-if="item.checkbox"></f7-icon>
+                <f7-icon f7="circle" v-else></f7-icon>
+              </a>
+            </div>
+            <div class="item-inner">
+              <del v-if="item.checkbox">
+                <ShowTitle :item="item"></ShowTitle>
+              </del>
+              <div v-else>
+                <ShowTitle :item="item"></ShowTitle>
               </div>
-              <div class="item-title">
-                <div class="accordion-item" :id='action +"_accordion-item_" + item.id'>
-                  <div class="accordion-item">
-                    <del v-if="item.checkbox">
-                      <ShowTitle :item="item"></ShowTitle>
-                    </del>
-                    <div v-else>
-                      <ShowTitle :item="item"></ShowTitle>
-                    </div>
-                  </div>
-                  <div class="accordion-item-content">
-                      <forms @query="onQuery" @closeEditTodo="closeEdit" :data="transferData"></forms>
-                  </div>
-                </div>
-              </div>
-              <div class="item-after" v-show="item.show">
-                <a @click="onOpen(item)"><f7-icon f7="compose"></f7-icon></a>&nbsp &nbsp
+              <div class="item-after">
+                <a @click="onOpen(item)"><f7-icon f7="compose"></f7-icon></a>&nbsp
                 <a @click="onStarClick(item)">
                   <f7-icon class="starColor" v-if="item.star" f7="star_fill" color="#F5A623"></f7-icon>
                   <f7-icon class="starColor" v-else f7="star" color="#F5A623"></f7-icon>
                 </a>
               </div>
-            <!-- </div> -->
-          </f7-list-item>
-          <div id="taskCount" v-if="action === true"><i>{{completedCount}} tesk completed</i></div>
-          <div id="taskCount" v-if="action === 'all'"><i>{{AllCount}} tesk left</i></div>
-          <div id="taskCount" v-if="action === false"><i>{{progressCount}} tesk left</i></div>
-        </f7-list>
+            </div>
+          </div>
+          <forms v-if="item.show" @query="onQuery" @closeEditTodo="closeEdit(item)" :data="transferData"></forms>
+          <div class="sortable-handler"></div>
+        </li>
+      </ul>
     </div>
+    <div id="taskCount" v-if="action === true"><i>{{completedCount}} task completed</i></div>
+    <div id="taskCount" v-if="action === 'all'"><i>{{AllCount}} task left</i></div>
+    <div id="taskCount" v-if="action === false"><i>{{progressCount}} task left</i></div>
+  </div>
 </template>
 <script>
 import Forms from "./Form.vue";
@@ -55,7 +52,7 @@ export default {
       openObject: null,
       newData: {
         id: null,
-        title: "",
+        title: null,
         date: null,
         time: null,
         file: null,
@@ -63,7 +60,7 @@ export default {
         checkbox: false,
         star: false,
         new: true,
-        show: true
+        show: false
       },
       transferData: null,
       completedCount: 0,
@@ -89,21 +86,19 @@ export default {
       param.star = !param.star;
     },
     onOpen(item) {
+      this.items.map((m) => (m.show = false));
+      item.show = !item.show;
       this.transferData = Object.assign({}, item);
-      this.openObject = this.action + "_accordion-item_" + item.id;
-      const elementClass = document.getElementsByClassName("accordion-item");
-      for (let i = 0; i <= elementClass.length - 1; i++) {
-        elementClass[i].classList.remove("accordion-item-opened");
-      }
-      const element = document.getElementById(this.openObject);
-      element.classList.toggle("accordion-item-opened");
     },
     onQuery(val) {
+      this.items.map((m) => (m.show = false));
+      val.show = !val.show;
       this.$emit("query", {
         data: val
       });
     },
-    closeEdit() {
+    closeEdit(item) {
+      item.show = !item.show;
       const element = document.getElementById(this.openObject);
       element.classList.toggle("accordion-item-opened");
     }
@@ -112,15 +107,18 @@ export default {
 </script>
 
 <style>
-.starColor{
-  color: #F5A623;
+.starColor {
+  color: #f5a623;
 }
 .li_yellow {
-  background-color: #FFF2DC;
+  background-color: #fff2dc;
 }
 #taskCount {
   font-family: Roboto-Italic;
   text-align: left;
-  color: #E1E1E1 ;
+  color: #e1e1e1;
+}
+.md .list .item-media {
+  min-width: 20px;
 }
 </style>

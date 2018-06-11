@@ -53,7 +53,7 @@ export default {
           checkbox: false,
           new: false,
           star: false,
-          show: true
+          show: false
         });
         this.id++;
         return;
