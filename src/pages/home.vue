@@ -8,9 +8,9 @@
       </div>
       <div class="toolbar tabbar">
         <div class="toolbar-inner">
-          <a href="#tab-1" class="tab-link tab-link-active" @click="setAction('all')">My Tasks</a>
-          <a href="#tab-1" class="tab-link" @click="setAction(false)">In Progress</a>
-          <a href="#tab-1" class="tab-link" @click="setAction(true)">Completed</a>
+          <a href="#tab-1" class="tab-link tab-link-active" @click="setAction($event, 'all')">My Tasks</a>
+          <a href="#tab-1" class="tab-link" @click="setAction($event, false)">In Progress</a>
+          <a href="#tab-1" class="tab-link" @click="setAction($event, true)">Completed</a>
           <span class="tab-link-highlight" v-bind:style="{transform: tabStyle}"></span>
         </div>
       </div>
@@ -18,7 +18,7 @@
         <div class="tabs-animated-wrap">
           <div class="tabs">
             <div id="tab-1" class="page-content tab tab-active">
-              <tab-data :action="currentTab" :items="items"  @query="onQuery" @changData="changData"></tab-data>
+              <tab-data :action="currentTab" :items="items"  @query="onQuery"></tab-data>
             </div>
           </div>
         </div>
@@ -63,21 +63,23 @@ export default {
       if (index !== -1) this.items.splice(index, 1);
       this.items.push(val.data);
     },
-    setAction(action) {
+    setAction(event, action) {
+      const elementClass = document.getElementsByClassName("tab-link");
+      for (let i = 0; i <= elementClass.length - 1; i++) {
+        elementClass[i].classList.remove("tab-link-active");
+      }
+      event.target.classList.toggle("tab-link-active");
       this.currentTab = action;
       if (this.currentTab == true)
         this.tabStyle = "translate3d(200%, 0px, 0px)";
       else if (this.currentTab == false)
         this.tabStyle = "translate3d(100%, 0px, 0px)";
       else this.tabStyle = "translate3d(0%, 0px, 0px)";
-    },
+    }
   }
 };
 </script>
 <style>
-.li_yellow {
-  background-color: #fff2dc;
-}
 .tab-link-highlight {
   width: 33.3333%;
 }
