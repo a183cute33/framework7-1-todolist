@@ -3,13 +3,14 @@
         <add-task @query="onQuery"></add-task>
         <f7-list sortable :sortable-enabled="sorting">
           <f7-list-item v-if="action === 'all' || action === item.checkbox" v-for="item in items" v-bind:class="{ li_yellow: item.star }">
-            <div class="item-media">
-              <a @click="onClick(item)" v-show="item.show">
-                <f7-icon f7="check_round" v-if="item.checkbox"></f7-icon>
-                <f7-icon f7="circle" v-else></f7-icon>
-              </a>
-            </div>
-               <div class="item-title">
+            <!-- <div class="item-inner"> -->
+              <div class="item-media">
+                <a @click="onClick(item)" v-show="item.show">
+                  <f7-icon f7="check_round" v-if="item.checkbox"></f7-icon>
+                  <f7-icon f7="circle" v-else></f7-icon>
+                </a>
+              </div>
+              <div class="item-title">
                 <div class="accordion-item" :id='action +"_accordion-item_" + item.id'>
                   <div class="accordion-item">
                     <del v-if="item.checkbox">
@@ -23,15 +24,19 @@
                       <forms @query="onQuery" @closeEditTodo="closeEdit" :data="transferData"></forms>
                   </div>
                 </div>
-               </div>
-                <div class="item-after" v-show="item.show">
-                  <a @click="onOpen(item)"><f7-icon f7="compose"></f7-icon></a>&nbsp &nbsp
-                  <a @click="onStarClick(item)">
-                    <f7-icon v-if="item.star" f7="star_fill" color="yellow"></f7-icon>
-                    <f7-icon v-else f7="star" color="yellow"></f7-icon>
-                  </a>
               </div>
+              <div class="item-after" v-show="item.show">
+                <a @click="onOpen(item)"><f7-icon f7="compose"></f7-icon></a>&nbsp &nbsp
+                <a @click="onStarClick(item)">
+                  <f7-icon class="starColor" v-if="item.star" f7="star_fill" color="#F5A623"></f7-icon>
+                  <f7-icon class="starColor" v-else f7="star" color="#F5A623"></f7-icon>
+                </a>
+              </div>
+            <!-- </div> -->
           </f7-list-item>
+          <div id="taskCount" v-if="action === true"><i>{{completedCount}} tesk completed</i></div>
+          <div id="taskCount" v-if="action === 'all'"><i>{{AllCount}} tesk left</i></div>
+          <div id="taskCount" v-if="action === false"><i>{{progressCount}} tesk left</i></div>
         </f7-list>
     </div>
 </template>
@@ -60,8 +65,21 @@ export default {
         new: true,
         show: true
       },
-      transferData: null
+      transferData: null,
+      completedCount: 0,
+      progressCount: 0,
+      AllCount: 0
     };
+  },
+  watch: {
+    items: {
+      handler: function(val, oldVal) {
+        this.completedCount = val.filter(f => f.checkbox).length;
+        this.progressCount = val.filter(f => !f.checkbox).length;
+        this.AllCount = val.length;
+      },
+      deep: true
+    }
   },
   methods: {
     onClick(param) {
@@ -94,4 +112,15 @@ export default {
 </script>
 
 <style>
+.starColor{
+  color: #F5A623;
+}
+.li_yellow {
+  background-color: #FFF2DC;
+}
+#taskCount {
+  font-family: Roboto-Italic;
+  text-align: left;
+  color: #E1E1E1 ;
+}
 </style>
